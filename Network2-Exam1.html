@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Communication & Networking 2 — Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(139,92,246,0.4);
+    --accent: #a78bfa;
+    --accent-dim: rgba(167,139,250,0.12);
+    --accent-glow: rgba(167,139,250,0.25);
+    --green: #68d391;
+    --green-dim: rgba(104,211,145,0.12);
+    --red: #fc8181;
+    --red-dim: rgba(252,129,129,0.12);
+    --amber: #f6ad55;
+    --amber-dim: rgba(246,173,85,0.12);
+    --text: #e2e8f0;
+    --muted: #718096;
+    --muted2: #4a5568;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(167,139,250,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1.25rem 5rem; position: relative; z-index: 1; }
+
+  .hero {
+    text-align: center;
+    padding: 3rem 2rem 2.5rem;
+    background: linear-gradient(135deg, rgba(167,139,250,0.08) 0%, rgba(17,24,39,0) 60%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--accent-dim);
+    border: 1px solid rgba(167,139,250,0.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .hero p { font-size: 15px; color: var(--muted); }
+
+  .progress-wrap { margin-bottom: 2rem; }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #c4b5fd);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 12px rgba(167,139,250,0.4);
+  }
+
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+  .q-card:hover { border-color: rgba(255,255,255,0.1); }
+  .q-card.answered { border-color: rgba(167,139,250,0.2); }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .q-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(167,139,250,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .multi-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--amber);
+    background: var(--amber-dim);
+    border: 1px solid rgba(246,173,85,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    color: var(--text);
+    user-select: none;
+  }
+  .option:hover { border-color: var(--border-hover); background: rgba(167,139,250,0.05); color: #fff; }
+  .option.selected { border-color: var(--accent); background: var(--accent-dim); color: #fff; }
+  .option.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .option.wrong { border-color: var(--red); background: var(--red-dim); color: var(--red); }
+  .option.show-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .option.disabled { cursor: default; }
+
+  .opt-marker {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .option.selected .opt-marker,
+  .option.correct .opt-marker,
+  .option.wrong .opt-marker,
+  .option.show-correct .opt-marker { opacity: 1; }
+
+  .submit-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-top: 1.5rem;
+  }
+  .submit-info { font-size: 13px; color: var(--muted); font-family: var(--mono); }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary { background: var(--accent); color: #0a0f1e; }
+  .btn-primary:hover { background: #c4b5fd; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(167,139,250,0.3); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid rgba(167,139,250,0.3); }
+  .btn-ghost:hover { background: var(--accent-dim); }
+
+  #result-screen { display: none; }
+
+  .result-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .score-circle {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+  .score-circle svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-circle-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-pct { font-size: 30px; font-weight: 700; color: #fff; font-family: var(--mono); }
+  .score-lbl { font-size: 11px; color: var(--muted); font-family: var(--mono); letter-spacing: 1px; }
+
+  .grade-badge {
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 6px 20px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 700; font-family: var(--mono); }
+  .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .c-green { color: var(--green); }
+  .c-red { color: var(--red); }
+  .c-blue { color: var(--accent); }
+
+  .review-heading {
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 2rem 0 1rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .review-heading::before { content: ''; display: block; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; }
+
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: .75rem;
+  }
+  .review-item.ri-correct { border-color: rgba(104,211,145,0.25); }
+  .review-item.ri-wrong { border-color: rgba(252,129,129,0.25); }
+
+  .ri-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .75rem;
+  }
+  .ri-q { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: .75rem; }
+  .ri-answers { display: flex; flex-direction: column; gap: 6px; }
+  .ri-answer {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    line-height: 1.5;
+  }
+  .ri-answer.your { background: var(--red-dim); color: var(--red); }
+  .ri-answer.correct { background: var(--green-dim); color: var(--green); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .pill-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(104,211,145,0.25); }
+  .pill-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(252,129,129,0.25); }
+  .pill-num { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  @media (max-width: 520px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Quiz — Chapter Review</div>
+    <h1>Data Communication &amp; Networking 2</h1>
+    <p>25 Questions &nbsp;·&nbsp; Multiple Choice &nbsp;·&nbsp; Instant Feedback</p>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="prog-text">0 / 25 answered</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div id="questions-list"></div>
+
+    <div class="submit-bar">
+      <span class="submit-info" id="submit-info">Answer all questions to submit</span>
+      <button class="btn btn-primary" id="submit-btn" disabled onclick="submitQuiz()">Submit Quiz →</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen">
+    <div class="result-hero">
+      <div class="score-circle">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="0 327" id="score-arc"
+            style="transition: stroke-dasharray 1s cubic-bezier(.4,0,.2,1)"/>
+        </svg>
+        <div class="score-circle-text">
+          <div class="score-pct" id="score-pct-text">0%</div>
+          <div class="score-lbl">SCORE</div>
+        </div>
+      </div>
+      <div class="grade-badge" id="grade-badge"></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num c-green" id="r-correct">0</div><div class="stat-lbl">Correct</div></div>
+        <div class="stat-card"><div class="stat-num c-red" id="r-wrong">0</div><div class="stat-lbl">Wrong</div></div>
+        <div class="stat-card"><div class="stat-num c-blue">25</div><div class="stat-lbl">Total</div></div>
+      </div>
+    </div>
+
+    <div class="review-heading">Answer Review</div>
+    <div id="review-list"></div>
+
+    <hr class="divider">
+    <div style="text-align:center">
+      <button class="btn btn-ghost" onclick="resetQuiz()">↩ Retake Quiz</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+  {
+    n:1, multi:false,
+    t:"Which connection provides a secure CLI session with encryption to a Cisco switch?",
+    opts:["A console connection","An AUX connection","A Telnet connection","An SSH connection"],
+    ans:[3]
+  },
+  {
+    n:2, multi:true,
+    t:"What are the three ranges of IP addresses that are reserved for internal private use? (Choose three.)",
+    opts:["10.0.0.0/8","64.100.0.0/14","127.16.0.0/12","172.16.0.0/12","192.31.7.0/24","192.168.0.0/16"],
+    ans:[0,3,5]
+  },
+  {
+    n:3, multi:false,
+    t:"What is the function of the kernel of an operating software?",
+    opts:[
+      "It provides a user interface that allows users to request a specific task.",
+      "The kernel links the hardware drivers with the underlying electronics of a computer.",
+      "It is an application that allows the initial configuration of a Cisco device.",
+      "The kernel provisions hardware resources to meet software requirements."
+    ],
+    ans:[3]
+  },
+  {
+    n:4, multi:false,
+    t:"A network administrator needs to keep the user ID, password, and session contents private when establishing remote CLI connectivity with a switch to manage it. Which access method should be chosen?",
+    opts:["Telnet","Console","AUX","SSH"],
+    ans:[3]
+  },
+  {
+    n:5, multi:false,
+    t:"Which command or key combination allows a user to return to the previous level in the command hierarchy?",
+    opts:["end","exit","Ctrl-Z","Ctrl-C"],
+    ans:[1]
+  },
+  {
+    n:6, multi:false,
+    t:"A router has a valid operating system and a configuration file stored in NVRAM. The configuration file contains an enable secret password but no console password. When the router boots up, which mode will display?",
+    opts:["Global configuration mode","Setup mode","Privileged EXEC mode","User EXEC mode"],
+    ans:[3]
+  },
+  {
+    n:7, multi:true,
+    t:"Which two functions are provided to users by the context-sensitive help feature of the Cisco IOS CLI? (Choose two.)",
+    opts:[
+      "Providing an error message when a wrong command is submitted",
+      "Displaying a list of all available commands within the current mode",
+      "Allowing the user to complete the remainder of an abbreviated command with the TAB key",
+      "Determining which option, keyword, or argument is available for the entered command",
+      "Selecting the best command to accomplish a task"
+    ],
+    ans:[1,3]
+  },
+  {
+    n:8, multi:false,
+    t:"Which information does the show startup-config command display?",
+    opts:[
+      "The IOS image copied into RAM",
+      "The bootstrap program in the ROM",
+      "The contents of the current running configuration file in the RAM",
+      "The contents of the saved configuration file in the NVRAM"
+    ],
+    ans:[3]
+  },
+  {
+    n:9, multi:false,
+    t:"Why is it important to configure a hostname on a device?",
+    opts:[
+      "A Cisco router or switch only begins to operate when its hostname is set",
+      "A hostname must be configured before any other parameters",
+      "To identify the device during remote access (SSH or Telnet)",
+      "To allow local access to the device through the console port"
+    ],
+    ans:[2]
+  },
+  {
+    n:10, multi:true,
+    t:"Which two host names follow the guidelines for naming conventions on Cisco IOS devices? (Choose two.)",
+    opts:["Branch2!","RM-3-Switch-2A4","Floor(15)","HO Floor 17","SwBranch799"],
+    ans:[1,4]
+  },
+  {
+    n:11, multi:false,
+    t:"How does the service password-encryption command enhance password security on Cisco routers and switches?",
+    opts:[
+      "It encrypts passwords as they are sent across the network.",
+      "It encrypts passwords that are stored in router or switch configuration files.",
+      "It requires that a user type encrypted passwords to gain console access to a router or switch.",
+      "It requires encrypted passwords to be used when connecting remotely to a router or switch with Telnet."
+    ],
+    ans:[1]
+  },
+  {
+    n:12, multi:false,
+    t:"A network administrator is configuring the MOTD on switch SW1. What is the purpose of this command?",
+    opts:[
+      "To display a message when a user accesses the switch",
+      "To configure switch SW1 so that only the users in the Admin group can telnet into SW1",
+      "To force users of the Admin group to enter a password for authentication",
+      "To configure switch SW1 so that the message will display when a user enters the enable command"
+    ],
+    ans:[0]
+  },
+  {
+    n:13, multi:false,
+    t:"While trying to solve a network issue, a technician made multiple changes to the current router configuration file. The changes did not solve the problem and were not saved. What action can the technician take to discard the changes and work with the file in NVRAM?",
+    opts:[
+      "Issue the reload command without saving the running configuration.",
+      "Delete the vlan.dat file and reboot the device.",
+      "Close and reopen the terminal emulation software.",
+      "Issue the copy startup-config running-config command."
+    ],
+    ans:[0]
+  },
+  {
+    n:14, multi:false,
+    t:"What is the function of the kernel of an operating system?",
+    opts:[
+      "It provides a user interface that allows users to request a specific task.",
+      "The kernel links the hardware drivers with the underlying electronics of a computer.",
+      "It is an application that allows the initial configuration of a Cisco device.",
+      "The kernel provisions hardware resources to meet software requirements."
+    ],
+    ans:[3]
+  },
+  {
+    n:15, multi:false,
+    t:"A router with a valid operating system contains a configuration file stored in NVRAM. The configuration file has an enable secret password but no console password. When the router boots up, which mode will display?",
+    opts:["Privileged EXEC mode","Setup mode","User EXEC mode","Global configuration mode"],
+    ans:[2]
+  },
+  {
+    n:16, multi:true,
+    t:"What are two characteristics of RAM on a Cisco device? (Choose two.)",
+    opts:[
+      "RAM provides nonvolatile storage.",
+      "The configuration that is actively running on the device is stored in RAM.",
+      "The contents of RAM are lost during a power cycle.",
+      "RAM is a component in Cisco switches but not in Cisco routers.",
+      "RAM is able to store multiple versions of IOS and configuration files."
+    ],
+    ans:[1,2]
+  },
+  {
+    n:17, multi:false,
+    t:"Which interface allows remote management of a Layer 2 switch?",
+    opts:[
+      "The AUX interface",
+      "The console port interface",
+      "The switch virtual interface",
+      "The first Ethernet port interface"
+    ],
+    ans:[2]
+  },
+  {
+    n:18, multi:false,
+    t:"Which interface is the default SVI on a Cisco switch?",
+    opts:["FastEthernet 0/1","GigabitEthernet 0/1","VLAN 1","VLAN 99"],
+    ans:[2]
+  },
+  {
+    n:19, multi:false,
+    t:"Why would a Layer 2 switch need an IP address?",
+    opts:[
+      "To enable the switch to send broadcast frames to attached PCs",
+      "To enable the switch to function as a default gateway",
+      "To enable the switch to be managed remotely",
+      "To enable the switch to receive frames from attached PCs"
+    ],
+    ans:[2]
+  },
+  {
+    n:20, multi:false,
+    t:"What command can be used on a Windows PC to see the IP configuration of that computer?",
+    opts:["ping","ipconfig","show interfaces","show ip interface brief"],
+    ans:[1]
+  },
+  {
+    n:21, multi:true,
+    t:"Which two characters are allowed as part of the hostname of a Cisco device? (Choose two.)",
+    opts:["Numbers","Question mark","Space","Tab","Dash"],
+    ans:[0,4]
+  },
+  {
+    n:22, multi:false,
+    t:"What is a result of using the service password-encryption command on a Cisco network device?",
+    opts:[
+      "The command encrypts the banner message.",
+      "The command encrypts the enable mode password.",
+      "All passwords in the configuration are not shown in clear text when viewing the configuration.",
+      "A network administrator who later logs into the device will be required to enter an administrator password in order to gain access to the Cisco device."
+    ],
+    ans:[2]
+  },
+  {
+    n:23, multi:true,
+    t:"Passwords can be used to restrict access to all or parts of the Cisco IOS. Select the modes and interfaces that can be protected with passwords. (Choose three.)",
+    opts:[
+      "VTY interface",
+      "Console interface",
+      "Ethernet interface",
+      "Boot IOS mode",
+      "Privileged EXEC mode",
+      "Router configuration mode"
+    ],
+    ans:[0,1,4]
+  },
+  {
+    n:24, multi:false,
+    t:"What method can be used by two computers to ensure that packets are not dropped because too much data is being sent too quickly?",
+    opts:["Encapsulation","Flow control","Access method","Response timeout"],
+    ans:[1]
+  },
+  {
+    n:25, multi:true,
+    t:"What three application layer protocols are part of the TCP/IP protocol suite? (Choose three.)",
+    opts:["ARP","DHCP","DNS","FTP","NAT","PPP"],
+    ans:[1,2,3]
+  }
+];
+
+const LABELS = ['A','B','C','D','E','F'];
+let userAnswers = {};
+let submitted = false;
+
+function getMultiLabel(q) {
+  const count = q.ans.length;
+  return `Choose ${count}`;
+}
+
+function buildQuiz() {
+  const list = document.getElementById('questions-list');
+  list.innerHTML = Q.map(q => `
+    <div class="q-card" id="qcard-${q.n}">
+      <div class="q-header">
+        <span class="q-num">Q${String(q.n).padStart(2,'0')}</span>
+        ${q.multi ? `<span class="multi-badge">⚠ ${getMultiLabel(q)}</span>` : ''}
+      </div>
+      <div class="q-text">${q.t}</div>
+      <div class="options">
+        ${q.opts.map((o,i) => `
+          <div class="option" id="opt-${q.n}-${i}" onclick="pick(${q.n},${i},${q.multi})">
+            <div class="opt-marker">${LABELS[i]}</div>
+            <span>${o}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function pick(qn, idx, multi) {
+  if (submitted) return;
+  if (!userAnswers[qn]) userAnswers[qn] = [];
+  if (multi) {
+    const p = userAnswers[qn].indexOf(idx);
+    if (p >= 0) userAnswers[qn].splice(p, 1);
+    else userAnswers[qn].push(idx);
+  } else {
+    userAnswers[qn] = [idx];
+  }
+  refreshCard(qn);
+  updateProgress();
+}
+
+function refreshCard(qn) {
+  const q = Q.find(x => x.n === qn);
+  const sel = userAnswers[qn] || [];
+  const card = document.getElementById('qcard-' + qn);
+  card.classList.toggle('answered', sel.length > 0);
+  q.opts.forEach((_, i) => {
+    const el = document.getElementById(`opt-${qn}-${i}`);
+    el.className = 'option' + (sel.includes(i) ? ' selected' : '');
+  });
+}
+
+function updateProgress() {
+  const answered = Q.filter(q => (userAnswers[q.n]||[]).length > 0).length;
+  const pct = Math.round(answered / Q.length * 100);
+  document.getElementById('prog-text').textContent = `${answered} / ${Q.length} answered`;
+  document.getElementById('prog-pct').textContent = `${pct}%`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = answered < Q.length;
+  document.getElementById('submit-info').textContent =
+    answered < Q.length
+      ? `${Q.length - answered} question${Q.length - answered > 1 ? 's' : ''} remaining`
+      : 'All answered — ready to submit!';
+}
+
+function submitQuiz() {
+  submitted = true;
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  let correct = 0;
+  Q.forEach(q => {
+    const ua = (userAnswers[q.n] || []).slice().sort().join(',');
+    const ca = q.ans.slice().sort().join(',');
+    if (ua === ca) correct++;
+  });
+  const wrong = Q.length - correct;
+  const pct = Math.round(correct / Q.length * 100);
+  const circ = 2 * Math.PI * 52;
+
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent = wrong;
+  document.getElementById('score-pct-text').textContent = pct + '%';
+
+  setTimeout(() => {
+    const arc = document.getElementById('score-arc');
+    arc.setAttribute('stroke-dasharray', `${circ * pct / 100} ${circ}`);
+    if (pct >= 90) arc.style.stroke = 'var(--green)';
+    else if (pct >= 60) arc.style.stroke = 'var(--accent)';
+    else arc.style.stroke = 'var(--red)';
+  }, 100);
+
+  const badge = document.getElementById('grade-badge');
+  if (pct >= 90)      { badge.textContent = '🏆 Excellent!';        badge.style.cssText = 'background:var(--green-dim);color:var(--green);border:1px solid rgba(104,211,145,0.3)'; }
+  else if (pct >= 75) { badge.textContent = '⭐ Very Good';          badge.style.cssText = 'background:var(--accent-dim);color:var(--accent);border:1px solid rgba(167,139,250,0.3)'; }
+  else if (pct >= 60) { badge.textContent = '👍 Good';               badge.style.cssText = 'background:var(--amber-dim);color:var(--amber);border:1px solid rgba(246,173,85,0.3)'; }
+  else                { badge.textContent = '📚 Needs Review';       badge.style.cssText = 'background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3)'; }
+
+  buildReview();
+  window.scrollTo(0, 0);
+}
+
+function buildReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = Q.map(q => {
+    const ua = (userAnswers[q.n] || []).slice().sort().join(',');
+    const ca = q.ans.slice().sort().join(',');
+    const isOk = ua === ca;
+    const sel = userAnswers[q.n] || [];
+
+    let answersHtml = '';
+    if (!isOk && sel.length > 0) {
+      answersHtml += `<div class="ri-answer your"><span>✗ Your answer: ${sel.map(i => q.opts[i]).join(' &nbsp;·&nbsp; ')}</span></div>`;
+    }
+    answersHtml += `<div class="ri-answer correct"><span>✓ Correct: ${q.ans.map(i => q.opts[i]).join(' &nbsp;·&nbsp; ')}</span></div>`;
+
+    return `<div class="review-item ${isOk ? 'ri-correct' : 'ri-wrong'}">
+      <div class="ri-header">
+        <span class="pill pill-num">Q${String(q.n).padStart(2,'0')}</span>
+        <span class="pill ${isOk ? 'pill-green' : 'pill-red'}">${isOk ? '✓ Correct' : '✗ Wrong'}</span>
+      </div>
+      <div class="ri-q">${q.t}</div>
+      <div class="ri-answers">${answersHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function resetQuiz() {
+  userAnswers = {};
+  submitted = false;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  buildQuiz();
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+buildQuiz();
+updateProgress();
+</script>
+</body>
+</html>
