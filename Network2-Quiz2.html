@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Communication & Networking 2 — Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0c0e0a;
+    --surface: #131510;
+    --surface2: #1c1f17;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(251,191,36,0.4);
+    --accent: #fbbf24;
+    --accent-dark: #d97706;
+    --accent-dim: rgba(251,191,36,0.10);
+    --green: #68d391;
+    --green-dim: rgba(104,211,145,0.12);
+    --red: #fc8181;
+    --red-dim: rgba(252,129,129,0.12);
+    --amber: #f6ad55;
+    --amber-dim: rgba(246,173,85,0.12);
+    --text: #e8e6dc;
+    --muted: #7a7864;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(251,191,36,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(251,191,36,0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1.25rem 5rem; position: relative; z-index: 1; }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 3rem 2rem 2.5rem;
+    background: linear-gradient(135deg, rgba(251,191,36,0.07) 0%, rgba(19,21,16,0) 65%);
+    border: 1px solid rgba(251,191,36,0.12);
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--accent-dim);
+    border: 1px solid rgba(251,191,36,0.22);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .hero p { font-size: 15px; color: var(--muted); }
+
+  /* ── Progress ── */
+  .progress-wrap { margin-bottom: 2rem; }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-bottom: 8px;
+  }
+  .progress-track { height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #fde68a);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 14px rgba(251,191,36,0.35);
+  }
+
+  /* ── Question Card ── */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+  .q-card:hover { border-color: rgba(255,255,255,0.10); }
+  .q-card.answered { border-color: rgba(251,191,36,0.22); }
+
+  .q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .q-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(251,191,36,0.22);
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Options ── */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    color: var(--text);
+    user-select: none;
+  }
+  .option:hover { border-color: var(--border-hover); background: rgba(251,191,36,0.05); color: #fff; }
+  .option.selected { border-color: var(--accent); background: var(--accent-dim); color: #fff; }
+  .option.correct  { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .option.wrong    { border-color: var(--red);   background: var(--red-dim);   color: var(--red); }
+  .option.show-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+
+  .opt-marker {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 600;
+    flex-shrink: 0; opacity: 0.7;
+  }
+  .option.selected .opt-marker,
+  .option.correct  .opt-marker,
+  .option.wrong    .opt-marker,
+  .option.show-correct .opt-marker { opacity: 1; }
+
+  /* ── Submit Bar ── */
+  .submit-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-top: 1.5rem;
+  }
+  .submit-info { font-size: 13px; color: var(--muted); font-family: var(--mono); }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 14px; font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 10px; border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary { background: var(--accent); color: #0c0e0a; }
+  .btn-primary:hover { background: #fde68a; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(251,191,36,0.28); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid rgba(251,191,36,0.3); }
+  .btn-ghost:hover { background: var(--accent-dim); }
+
+  /* ── Result ── */
+  #result-screen { display: none; }
+
+  .result-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(251,191,36,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .score-circle { width: 140px; height: 140px; margin: 0 auto 1.5rem; position: relative; }
+  .score-circle svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-circle-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-pct { font-size: 30px; font-weight: 700; color: #fff; font-family: var(--mono); }
+  .score-lbl { font-size: 11px; color: var(--muted); font-family: var(--mono); letter-spacing: 1px; }
+
+  .grade-badge {
+    display: inline-block;
+    font-size: 15px; font-weight: 600;
+    padding: 6px 20px; border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-top: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem; text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 700; font-family: var(--mono); }
+  .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .c-green { color: var(--green); }
+  .c-red   { color: var(--red); }
+  .c-acc   { color: var(--accent); }
+
+  .review-heading {
+    font-size: 13px; font-family: var(--mono);
+    color: var(--muted); letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 2rem 0 1rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .review-heading::before {
+    content: ''; display: block;
+    width: 3px; height: 14px;
+    background: var(--accent); border-radius: 2px;
+  }
+
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: .75rem;
+  }
+  .review-item.ri-correct { border-color: rgba(104,211,145,0.25); }
+  .review-item.ri-wrong   { border-color: rgba(252,129,129,0.25); }
+
+  .ri-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: .75rem;
+  }
+  .ri-q { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: .75rem; }
+  .ri-answers { display: flex; flex-direction: column; gap: 6px; }
+  .ri-answer {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px; padding: 7px 12px;
+    border-radius: 8px; line-height: 1.5;
+  }
+  .ri-answer.your    { background: var(--red-dim);   color: var(--red); }
+  .ri-answer.correct { background: var(--green-dim); color: var(--green); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .pill-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(104,211,145,0.25); }
+  .pill-red   { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(252,129,129,0.25); }
+  .pill-num   { background: var(--surface2);  color: var(--muted); border: 1px solid var(--border); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  @media (max-width: 520px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Quiz — Chapter Review</div>
+    <h1>Data Communication &amp; Networking 2</h1>
+    <p>25 Questions &nbsp;·&nbsp; Multiple Choice &nbsp;·&nbsp; Instant Feedback</p>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="prog-text">0 / 25 answered</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="questions-list"></div>
+    <div class="submit-bar">
+      <span class="submit-info" id="submit-info">Answer all questions to submit</span>
+      <button class="btn btn-primary" id="submit-btn" disabled onclick="submitQuiz()">Submit Quiz →</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen">
+    <div class="result-hero">
+      <div class="score-circle">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="0 327" id="score-arc"
+            style="transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1)"/>
+        </svg>
+        <div class="score-circle-text">
+          <div class="score-pct" id="score-pct-text">0%</div>
+          <div class="score-lbl">SCORE</div>
+        </div>
+      </div>
+      <div class="grade-badge" id="grade-badge"></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num c-green" id="r-correct">0</div><div class="stat-lbl">Correct</div></div>
+        <div class="stat-card"><div class="stat-num c-red"   id="r-wrong">0</div><div class="stat-lbl">Wrong</div></div>
+        <div class="stat-card"><div class="stat-num c-acc">25</div><div class="stat-lbl">Total</div></div>
+      </div>
+    </div>
+    <div class="review-heading">Answer Review</div>
+    <div id="review-list"></div>
+    <hr class="divider">
+    <div style="text-align:center">
+      <button class="btn btn-ghost" onclick="resetQuiz()">↩ Retake Quiz</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+  {
+    n:1, multi:false,
+    t:"What is the length of an IPv4 address in bits?",
+    opts:["16 bits","32 bits","64 bits","128 bits"],
+    ans:[1]
+  },
+  {
+    n:2, multi:false,
+    t:"Which IPv4 address class is specifically reserved for Multicast transmission?",
+    opts:["Class A","Class C","Class D","Class E"],
+    ans:[2]
+  },
+  {
+    n:3, multi:false,
+    t:"What is the default subnet mask for a Class B network?",
+    opts:["255.0.0.0","255.255.0.0","255.255.255.0","255.255.255.240"],
+    ans:[1]
+  },
+  {
+    n:4, multi:false,
+    t:"The IP address range 10.0.0.0 to 10.255.255.255 is reserved by RFC 1918 for:",
+    opts:["Public IP Addresses","Class A Private IP Addresses","Loopback Addresses","Limited Broadcast Addresses"],
+    ans:[1]
+  },
+  {
+    n:5, multi:false,
+    t:"What is the primary function of a Subnet Mask?",
+    opts:[
+      "To encrypt data packets during transit.",
+      "To distinguish the Network portion from the Host portion of an IP address.",
+      "To dynamically translate private addresses into public addresses.",
+      "To determine the physical MAC address of a network interface card."
+    ],
+    ans:[1]
+  },
+  {
+    n:6, multi:false,
+    t:"If a network has a prefix length of /27, what is its equivalent dotted-decimal subnet mask?",
+    opts:["255.255.255.128","255.255.255.192","255.255.255.224","255.255.255.240"],
+    ans:[2]
+  },
+  {
+    n:7, multi:false,
+    t:"Which of the following addresses is used by a host to test its own local TCP/IP software stack (Loopback)?",
+    opts:["0.0.0.0","255.255.255.255","127.0.0.1","169.254.1.1"],
+    ans:[2]
+  },
+  {
+    n:8, multi:false,
+    t:"What is the Network ID (Network Address) for the host IP 192.168.10.5/24?",
+    opts:["192.168.10.0","192.168.10.255","192.168.0.0","192.168.10.1"],
+    ans:[0]
+  },
+  {
+    n:9, multi:false,
+    t:"How many usable host addresses are available in a subnet with a /30 prefix mask?",
+    opts:["4","2","6","14"],
+    ans:[1]
+  },
+  {
+    n:10, multi:false,
+    t:"Which global organization is responsible for allocating public IP addresses globally to prevent duplicates?",
+    opts:["IEEE","IANA","Cisco Systems","ISO"],
+    ans:[1]
+  },
+  {
+    n:11, multi:false,
+    t:"What is the official term for the classless routing mechanism that replaced traditional A, B, and C boundaries using \"Slash Notation\"?",
+    opts:["VLSM","NAT","CIDR","ARP"],
+    ans:[2]
+  },
+  {
+    n:12, multi:false,
+    t:"When borrowing exactly 1 bit from the host portion of a default /24 classful network, how many subnets are created?",
+    opts:["2","4","8","16"],
+    ans:[0]
+  },
+  {
+    n:13, multi:false,
+    t:"Which characteristic distinguishes an IPv6 address from an IPv4 address?",
+    opts:[
+      "IPv6 addresses are 64 bits long.",
+      "IPv6 relies entirely on Broadcast transmissions.",
+      "IPv6 addresses are 128 bits long and feature a simplified header design.",
+      "IPv6 is represented exclusively using dotted-decimal formatting."
+    ],
+    ans:[2]
+  },
+  {
+    n:14, multi:false,
+    t:"The address 255.255.255.255 represents which type of transmission?",
+    opts:[
+      "Default Gateway Address",
+      "Limited Broadcast Address",
+      "Local Host Loopback Interface",
+      "The first assignable address of Class E"
+    ],
+    ans:[1]
+  },
+  {
+    n:15, multi:false,
+    t:"If a host fails to acquire an IP via DHCP, it assigns itself a temporary address within the 169.254.0.0/16 range known as:",
+    opts:[
+      "Private Address",
+      "Link-Local (APIPA) Address",
+      "Loopback Address",
+      "Multicast Domain Address"
+    ],
+    ans:[1]
+  },
+  {
+    n:16, multi:false,
+    t:"Which component of a network device's operating system communicates directly with the hardware electronics and manages physical resources?",
+    opts:[
+      "The OS Shell",
+      "The GUI Interface",
+      "The OS Kernel",
+      "The Command-Line Interpreter"
+    ],
+    ans:[2]
+  },
+  {
+    n:17, multi:false,
+    t:"A network administrator connects a brand-new Cisco Catalyst Switch to a laptop using a rollover cable to perform the initial configuration. Which access method is being utilized?",
+    opts:[
+      "Secure Shell (SSH)",
+      "Telnet Connection",
+      "Auxiliary (AUX) Port",
+      "Console Port"
+    ],
+    ans:[3]
+  },
+  {
+    n:18, multi:false,
+    t:"Why is Secure Shell (SSH) strictly recommended over Telnet for remote CLI management sessions?",
+    opts:[
+      "SSH provides faster data plane switching speeds.",
+      "SSH encrypts passwords, user authentication, and commands over the network.",
+      "SSH does not require a terminal emulation program.",
+      "SSH is a physical connection that does not require an IP network topology."
+    ],
+    ans:[1]
+  },
+  {
+    n:19, multi:false,
+    t:"Which Cisco IOS mode is often referred to as the \"view-only\" mode because it allows only a limited number of basic monitoring commands and prevents any configuration changes?",
+    opts:[
+      "Global Configuration Mode",
+      "Privileged EXEC Mode",
+      "User EXEC Mode",
+      "Interface Sub-configuration Mode"
+    ],
+    ans:[2]
+  },
+  {
+    n:20, multi:false,
+    t:"A technician types the command configure terminal at the Switch# prompt. Which mode will the device enter immediately after this command?",
+    opts:[
+      "Global Configuration Mode",
+      "Line Sub-configuration Mode",
+      "Privileged EXEC Mode",
+      "Interface Sub-configuration Mode"
+    ],
+    ans:[0]
+  },
+  {
+    n:21, multi:false,
+    t:"In the Cisco IOS command syntax structure, what does an \"argument\" represent?",
+    opts:[
+      "A specific, predefined parameter explicitly hardcoded in the operating system.",
+      "A user-defined value or variable, such as a specific IP address or description string.",
+      "A prompt symbol indicating the current management layer.",
+      "A contextual error code displayed when a command is incomplete."
+    ],
+    ans:[1]
+  },
+  {
+    n:22, multi:false,
+    t:"Which Cisco IOS command can be shortened to its minimum unique characters as conf t?",
+    opts:[
+      "config terminal",
+      "configure terminal",
+      "confirmation termination",
+      "configure termination"
+    ],
+    ans:[1]
+  },
+  {
+    n:23, multi:false,
+    t:"To completely abort a running command in the Cisco IOS CLI or interrupt a process like an extended ping, which hotkey combination should be pressed?",
+    opts:["Ctrl-Z","Ctrl-Shift-6","Ctrl-C","Tab"],
+    ans:[1]
+  },
+  {
+    n:24, multi:false,
+    t:"Which command is used to secure the Privileged EXEC mode with a highly secure, encrypted password?",
+    opts:[
+      "enable password class",
+      "line console 0 password class",
+      "enable secret class",
+      "service password-encryption"
+    ],
+    ans:[2]
+  },
+  {
+    n:25, multi:false,
+    t:"Cisco Layer 2 switches support a specific number of virtual terminal lines for simultaneous remote access. What is the standard numbering range for these VTY lines?",
+    opts:["1 to 15","0 to 15","0 to 16","1 to 16"],
+    ans:[1]
+  }
+];
+
+const LABELS = ['A','B','C','D','E'];
+let userAnswers = {};
+let submitted = false;
+
+function buildQuiz() {
+  const list = document.getElementById('questions-list');
+  list.innerHTML = Q.map(q => `
+    <div class="q-card" id="qcard-${q.n}">
+      <div class="q-header">
+        <span class="q-num">Q${String(q.n).padStart(2,'0')}</span>
+      </div>
+      <div class="q-text">${q.t}</div>
+      <div class="options">
+        ${q.opts.map((o, i) => `
+          <div class="option" id="opt-${q.n}-${i}" onclick="pick(${q.n},${i})">
+            <div class="opt-marker">${LABELS[i]}</div>
+            <span>${o}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function pick(qn, idx) {
+  if (submitted) return;
+  userAnswers[qn] = [idx];
+  refreshCard(qn);
+  updateProgress();
+}
+
+function refreshCard(qn) {
+  const q = Q.find(x => x.n === qn);
+  const sel = userAnswers[qn] || [];
+  const card = document.getElementById('qcard-' + qn);
+  card.classList.toggle('answered', sel.length > 0);
+  q.opts.forEach((_, i) => {
+    const el = document.getElementById(`opt-${qn}-${i}`);
+    el.className = 'option' + (sel.includes(i) ? ' selected' : '');
+  });
+}
+
+function updateProgress() {
+  const answered = Q.filter(q => (userAnswers[q.n] || []).length > 0).length;
+  const pct = Math.round(answered / Q.length * 100);
+  document.getElementById('prog-text').textContent = `${answered} / ${Q.length} answered`;
+  document.getElementById('prog-pct').textContent = `${pct}%`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = answered < Q.length;
+  document.getElementById('submit-info').textContent =
+    answered < Q.length
+      ? `${Q.length - answered} question${Q.length - answered > 1 ? 's' : ''} remaining`
+      : 'All answered — ready to submit!';
+}
+
+function submitQuiz() {
+  submitted = true;
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  let correct = 0;
+  Q.forEach(q => {
+    const ua = (userAnswers[q.n] || []).slice().sort().join(',');
+    const ca = q.ans.slice().sort().join(',');
+    if (ua === ca) correct++;
+  });
+  const wrong = Q.length - correct;
+  const pct = Math.round(correct / Q.length * 100);
+  const circ = 2 * Math.PI * 52;
+
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent = wrong;
+  document.getElementById('score-pct-text').textContent = pct + '%';
+
+  setTimeout(() => {
+    const arc = document.getElementById('score-arc');
+    arc.setAttribute('stroke-dasharray', `${circ * pct / 100} ${circ}`);
+    if      (pct >= 90) arc.style.stroke = 'var(--green)';
+    else if (pct >= 60) arc.style.stroke = 'var(--accent)';
+    else                arc.style.stroke = 'var(--red)';
+  }, 100);
+
+  const badge = document.getElementById('grade-badge');
+  if      (pct >= 90) { badge.textContent = '🏆 Excellent!';   badge.style.cssText = 'background:var(--green-dim);color:var(--green);border:1px solid rgba(104,211,145,0.3)'; }
+  else if (pct >= 75) { badge.textContent = '⭐ Very Good';    badge.style.cssText = 'background:var(--accent-dim);color:var(--accent);border:1px solid rgba(251,191,36,0.3)'; }
+  else if (pct >= 60) { badge.textContent = '👍 Good';         badge.style.cssText = 'background:rgba(251,191,36,0.08);color:var(--amber);border:1px solid rgba(246,173,85,0.3)'; }
+  else                { badge.textContent = '📚 Needs Review'; badge.style.cssText = 'background:var(--red-dim);color:var(--red);border:1px solid rgba(252,129,129,0.3)'; }
+
+  buildReview();
+  window.scrollTo(0, 0);
+}
+
+function buildReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = Q.map(q => {
+    const ua = (userAnswers[q.n] || []).slice().sort().join(',');
+    const ca = q.ans.slice().sort().join(',');
+    const isOk = ua === ca;
+    const sel = userAnswers[q.n] || [];
+
+    let answersHtml = '';
+    if (!isOk && sel.length > 0) {
+      answersHtml += `<div class="ri-answer your"><span>✗ Your answer: ${sel.map(i => q.opts[i]).join(' · ')}</span></div>`;
+    }
+    answersHtml += `<div class="ri-answer correct"><span>✓ Correct: ${q.ans.map(i => q.opts[i]).join(' · ')}</span></div>`;
+
+    return `<div class="review-item ${isOk ? 'ri-correct' : 'ri-wrong'}">
+      <div class="ri-header">
+        <span class="pill pill-num">Q${String(q.n).padStart(2,'0')}</span>
+        <span class="pill ${isOk ? 'pill-green' : 'pill-red'}">${isOk ? '✓ Correct' : '✗ Wrong'}</span>
+      </div>
+      <div class="ri-q">${q.t}</div>
+      <div class="ri-answers">${answersHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function resetQuiz() {
+  userAnswers = {};
+  submitted = false;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  buildQuiz();
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+buildQuiz();
+updateProgress();
+</script>
+</body>
+</html>
